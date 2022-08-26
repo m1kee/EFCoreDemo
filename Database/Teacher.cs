@@ -1,7 +1,6 @@
 namespace EFCoreDemo.Database;
 
-public class Teacher { 
-    public int Id { get; set; }
+public class Teacher : BaseEntity { 
     public string Name { get; set; }
     public string LastName { get; set; }
 

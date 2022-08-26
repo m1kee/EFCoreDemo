@@ -25,6 +25,20 @@ using ( var ctx = new DemoDbContext()) {
     jhon.LastName = "Poe";
     ctx.SaveChanges();
 
+    // create course with student
+    var math = new Course() {
+        Name = "Math",
+        Students = new List<Student> () {
+            michael
+        }
+    };
+
+    // add student to course 
+    math.Students.Add(jhon);
+
+    ctx.SaveChanges();
+
+
     // delete student
     ctx.Remove<Student>(michael);
     ctx.Students.Remove(jhon);

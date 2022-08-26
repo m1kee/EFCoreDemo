@@ -23,6 +23,28 @@ public class DemoDbContext : DbContext {
             .IsRequired(false);
     }
     
+    public override int SaveChanges() {
+        // var entries = ChangeTracker
+        //     .Entries()
+        //     .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+        // var currentDate = DateTime.Now;
+        // foreach (var entityEntry in entries)
+        // {
+        //     if (entityEntry.Properties.Any(x => x.Metadata.GetColumnName().Equals("UpdatedDate"))) {
+
+        //     }
+            
+        //     entityEntry.Property("UpdatedDate").CurrentValue = currentDate;
+
+        //     if (entityEntry.State == EntityState.Added)
+        //     {
+        //         entityEntry.Property("CreatedDate").CurrentValue = currentDate;
+        //     }
+        // }
+
+        return base.SaveChanges();
+    }
     public DbSet<Student> Students { get; set; }
     public DbSet<Course> Courses { get; set; }
     public DbSet<Grade> Grades { get; set; }

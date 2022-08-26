@@ -9,5 +9,5 @@ public class Student : BaseEntity {
      //[NotMapped]
     public string FullName => $"{Name} {LastName}";
 
-    public List<Course> Courses { get; set; }
+    public List<Course>? Courses { get; set; }
 }

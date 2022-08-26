@@ -33,15 +33,23 @@ using ( var ctx = new DemoDbContext()) {
         }
     };
 
-    // add student to course 
-    math.Students.Add(jhon);
-
+    // save course 
+    ctx.Add<Course>(math);
     ctx.SaveChanges();
 
+    // add course to student
+    if (jhon.Courses == null)
+        jhon.Courses = new List<Course>();
+        
+    jhon.Courses.Add(math);
+    ctx.SaveChanges();
 
     // delete student
     ctx.Remove<Student>(michael);
     ctx.Students.Remove(jhon);
+
+    // delete course 
+    ctx.Remove<Course>(math);
 
     ctx.SaveChanges();
 }

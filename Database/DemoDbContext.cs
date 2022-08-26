@@ -3,8 +3,18 @@ using Microsoft.EntityFrameworkCore;
 namespace EFCoreDemo.Database;
 
 public class DemoDbContext : DbContext {
+
+    public DbSet<Student> Students { get; set; }
+    public DbSet<Course> Courses { get; set; }
+    public DbSet<Grade> Grades { get; set; }
+    public DbSet<Teacher> Teachers { get; set; }
+
+    public DemoDbContext() : base() {
+
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder builder){
-        builder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=EFCoreDemo;Trusted_Connection=True");
+        builder.UseSqlServer(@"Server=Jarvis;Database=EFCoreDemo;Trusted_Connection=True");
+        builder.LogTo(Console.WriteLine);
     }
 
     protected override void OnModelCreating(ModelBuilder builder) {
@@ -24,29 +34,36 @@ public class DemoDbContext : DbContext {
     }
     
     public override int SaveChanges() {
-        // var entries = ChangeTracker
-        //     .Entries()
-        //     .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
-
-        // var currentDate = DateTime.Now;
-        // foreach (var entityEntry in entries)
-        // {
-        //     if (entityEntry.Properties.Any(x => x.Metadata.GetColumnName().Equals("UpdatedDate"))) {
-
-        //     }
-            
-        //     entityEntry.Property("UpdatedDate").CurrentValue = currentDate;
-
-        //     if (entityEntry.State == EntityState.Added)
-        //     {
-        //         entityEntry.Property("CreatedDate").CurrentValue = currentDate;
-        //     }
-        // }
-
+        UpdateTrackingDates();
         return base.SaveChanges();
     }
-    public DbSet<Student> Students { get; set; }
-    public DbSet<Course> Courses { get; set; }
-    public DbSet<Grade> Grades { get; set; }
-    public DbSet<Teacher> Teachers { get; set; }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {
+        UpdateTrackingDates();
+        return base.SaveChangesAsync();
+    }
+
+    private void UpdateTrackingDates() {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+        var currentDate = DateTime.Now;
+
+        foreach (var entityEntry in entries)
+        {
+            if (entityEntry is IBaseEntity) {
+                switch (entityEntry.State)
+                {
+                    case EntityState.Added: 
+                        ((BaseEntity)entityEntry.Entity).CreatedDate = currentDate;
+                        ((BaseEntity)entityEntry.Entity).UpdatedDate = currentDate;
+                        break;
+                    case EntityState.Modified: 
+                        ((BaseEntity)entityEntry.Entity).UpdatedDate = currentDate;
+                        break;
+                }
+            }
+        }
+    }
 }

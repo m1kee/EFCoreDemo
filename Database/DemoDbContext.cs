@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EFCoreDemo.Database;
 
@@ -9,12 +10,14 @@ public class DemoDbContext : DbContext {
     public DbSet<Grade> Grades { get; set; }
     public DbSet<Teacher> Teachers { get; set; }
 
-    public DemoDbContext() : base() {
-
-    }
     protected override void OnConfiguring(DbContextOptionsBuilder builder){
         builder.UseSqlServer(@"Server=Jarvis;Database=EFCoreDemo;Trusted_Connection=True");
-        builder.LogTo(Console.WriteLine);
+        builder.LogTo(Console.WriteLine, new [] { 
+            DbLoggerCategory.Query.Name,
+            DbLoggerCategory.Database.Command.Name
+        }, LogLevel.Information);
+        // show parameter values on logging
+        builder.EnableSensitiveDataLogging();
     }
 
     protected override void OnModelCreating(ModelBuilder builder) {
@@ -52,7 +55,7 @@ public class DemoDbContext : DbContext {
 
         foreach (var entityEntry in entries)
         {
-            if (entityEntry is IBaseEntity) {
+            if (entityEntry.Entity is IBaseEntity) {
                 switch (entityEntry.State)
                 {
                     case EntityState.Added: 

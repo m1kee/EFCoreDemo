@@ -22,7 +22,7 @@ public class DemoDbContext : DbContext {
 
     protected override void OnModelCreating(ModelBuilder builder) {
         builder.Entity<Student>()
-            .Ignore(s => s.FullName);
+            .Ignore(s => s.RUT);
 
         builder.Entity<Grade>()
             .Property(g => g.Value)
